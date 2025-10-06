@@ -1,0 +1,158 @@
+SQL> 
+SQL> -- Create tables
+SQL> CREATE TABLE ADVISOR(AdvisorID NUMBER, AdvisorName VARCHAR2(50));
+
+Table created.
+
+SQL> CREATE TABLE STUDENT(StudentID NUMBER, StudentName VARCHAR2(50), BirthDate DATE, AdvisorID NUMBER);
+
+Table created.
+
+SQL> CREATE TABLE ENROLLMENT(StudentID NUMBER, CourseID NUMBER, Grade NUMBER);
+
+Table created.
+
+SQL> CREATE TABLE COURSE(CourseID NUMBER, CourseTitle VARCHAR2(50), Credits NUMBER);
+
+Table created.
+
+SQL> 
+SQL> -- Create primary keys
+SQL> ALTER TABLE ADVISOR ADD CONSTRAINT advisor_advisorid_PK PRIMARY KEY(AdvisorID);
+
+Table altered.
+
+SQL> 
+SQL> ALTER TABLE STUDENT ADD CONSTRAINT student_studentid_PK PRIMARY KEY(StudentID);
+
+Table altered.
+
+SQL> 
+SQL> ALTER TABLE ENROLLMENT ADD CONSTRAINT enrollment_stud_course_PK PRIMARY KEY(StudentID, CourseID);
+
+Table altered.
+
+SQL> 
+SQL> ALTER TABLE COURSE ADD CONSTRAINT course_courseid_PK PRIMARY KEY(CourseID);
+
+Table altered.
+
+SQL> 
+SQL> -- Create foreign keys
+SQL> ALTER TABLE STUDENT ADD CONSTRAINT student_advisorid_FK FOREIGN KEY(AdvisorID) REFERENCES ADVISOR(AdvisorID);
+
+Table altered.
+
+SQL> 
+SQL> ALTER TABLE ENROLLMENT ADD CONSTRAINT enrollment_studentid_FK1 FOREIGN KEY(StudentID) REFERENCES STUDENT(StudentID);
+
+Table altered.
+
+SQL> 
+SQL> ALTER TABLE ENROLLMENT ADD CONSTRAINT enrollment_courseid_FK2 FOREIGN KEY(CourseID) REFERENCES COURSE(CourseID);
+
+Table altered.
+
+SQL> 
+SQL> -- Add NOT NULL constraint
+SQL> ALTER TABLE ADVISOR MODIFY (AdvisorName CONSTRAINT advisor_advisorname_NN NOT NULL);
+
+Table altered.
+
+SQL> 
+SQL> ALTER TABLE STUDENT MODIFY (StudentName CONSTRAINT student_studentname_NN NOT NULL);
+
+Table altered.
+
+SQL> 
+SQL> -- Adding column to table
+SQL> ALTER TABLE STUDENT ADD (GENDER CHAR(1));
+
+Table altered.
+
+SQL> 
+SQL> -- Adding check constraints
+SQL> ALTER TABLE STUDENT ADD CONSTRAINT student_gender_CK CHECK (GENDER IN ('M', 'F', 'm', 'f'));
+
+Table altered.
+
+SQL> 
+SQL> ALTER TABLE COURSE ADD CONSTRAINT course_credits_CK CHECK (Credits>0);
+
+Table altered.
+
+SQL> 
+SQL> -- Adding unique constraint
+SQL> ALTER TABLE COURSE ADD CONSTRAINT course_coursetitle_UK UNIQUE(CourseTitle);
+
+Table altered.
+
+SQL> 
+SQL> -- Display table names
+SQL> SELECT table_name FROM user_tables;
+
+TABLE_NAME                                                                      
+------------------------------                                                  
+STUDENT                                                                         
+ADVISOR                                                                         
+ENROLLMENT                                                                      
+COURSE                                                                          
+
+SQL> 
+SQL> -- Display structure of tables
+SQL> DESC ADVISOR
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ADVISORID                                 NOT NULL NUMBER
+ ADVISORNAME                               NOT NULL VARCHAR2(50)
+
+SQL> DESC STUDENT
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ STUDENTID                                 NOT NULL NUMBER
+ STUDENTNAME                               NOT NULL VARCHAR2(50)
+ BIRTHDATE                                          DATE
+ ADVISORID                                          NUMBER
+ GENDER                                             CHAR(1)
+
+SQL> DESC ENROLLMENT
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ STUDENTID                                 NOT NULL NUMBER
+ COURSEID                                  NOT NULL NUMBER
+ GRADE                                              NUMBER
+
+SQL> DESC COURSE
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ COURSEID                                  NOT NULL NUMBER
+ COURSETITLE                                        VARCHAR2(50)
+ CREDITS                                            NUMBER
+
+SQL> 
+SQL> -- Display constraints
+SQL> SELECT constraint_name, table_name, constraint_type FROM user_constraints;
+
+CONSTRAINT_NAME                TABLE_NAME                     C                 
+------------------------------ ------------------------------ -                 
+COURSE_CREDITS_CK              COURSE                         C                 
+STUDENT_GENDER_CK              STUDENT                        C                 
+STUDENT_STUDENTNAME_NN         STUDENT                        C                 
+ADVISOR_ADVISORNAME_NN         ADVISOR                        C                 
+ENROLLMENT_COURSEID_FK2        ENROLLMENT                     R                 
+ENROLLMENT_STUDENTID_FK1       ENROLLMENT                     R                 
+STUDENT_ADVISORID_FK           STUDENT                        R                 
+ADVISOR_ADVISORID_PK           ADVISOR                        P                 
+STUDENT_STUDENTID_PK           STUDENT                        P                 
+ENROLLMENT_STUD_COURSE_PK      ENROLLMENT                     P                 
+COURSE_COURSEID_PK             COURSE                         P                 
+
+CONSTRAINT_NAME                TABLE_NAME                     C                 
+------------------------------ ------------------------------ -                 
+COURSE_COURSETITLE_UK          COURSE                         U                 
+
+12 rows selected.
+
+SQL> 
+SQL> -- Save spool
+SQL> SPOOL OFF;

@@ -1,0 +1,125 @@
+SQL> 
+SQL> -- Create tables with constraints
+SQL> CREATE TABLE ADVISOR(AdvisorID NUMBER, AdvisorName VARCHAR2(50) CONSTRAINT advisor_advisorname_NN NOT NULL, CONSTRAINT advisor_advisorid_PK PRIMARY KEY(AdvisorID));
+
+Table created.
+
+SQL> 
+SQL> CREATE TABLE STUDENT(StudentID NUMBER, StudentName VARCHAR2(50) CONSTRAINT student_studentname_NN NOT NULL, BirthDate DATE, AdvisorID NUMBER, GENDER CHAR(1) CONSTRAINT student_gender_CK CHECK (GENDER in ('M', 'F', 'm', 'f')), CONSTRAINT student_studentid_PK PRIMARY KEY(StudentID), CONSTRAINT student_advisorid_FK FOREIGN KEY(AdvisorID) REFERENCES ADVISOR(AdvisorID));
+
+Table created.
+
+SQL> 
+SQL> CREATE TABLE COURSE(CourseID NUMBER, CourseTitle VARCHAR2(50) CONSTRAINT course_coursetitle_UK UNIQUE, Credits NUMBER CONSTRAINT course_credits_CK CHECK (Credits>0), CONSTRAINT course_courseid_PK PRIMARY KEY(CourseID));
+
+Table created.
+
+SQL> 
+SQL> CREATE TABLE ENROLLMENT(StudentID NUMBER, CourseID NUMBER, GRADE NUMBER, CONSTRAINT enrollment_stud_course_PK PRIMARY KEY(StudentID, CourseID), CONSTRAINT enrollment_studentid_FK1 FOREIGN KEY(StudentID) REFERENCES STUDENT(StudentID), CONSTRAINT enrollment_courseid_FK2 FOREIGN KEY(CourseID) REFERENCES COURSE(CourseID));
+
+Table created.
+
+SQL> 
+SQL> -- Automatically generate primary and foreign keys
+SQL> CREATE SEQUENCE advisor_sequence START WITH 1 INCREMENT BY 1;
+
+Sequence created.
+
+SQL> CREATE SEQUENCE student_sequence START WITH 10 INCREMENT BY 1;
+
+Sequence created.
+
+SQL> CREATE SEQUENCE course_sequence START WITH 3 INCREMENT BY 1;
+
+Sequence created.
+
+SQL> 
+SQL> -- Insert data into tables
+SQL> INSERT INTO ADVISOR VALUES (advisor_sequence.NEXTVAL,'John');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO STUDENT VALUES(student_sequence.NEXTVAL, 'Catherine', DATE '2001-02-11', advisor_sequence.CURRVAL, 'F');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO COURSE VALUES(course_sequence.NEXTVAL, 'Databases I', 3);
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO ENROLLMENT VALUES(student_sequence.CURRVAL, course_sequence.CURRVAL, 98);
+
+1 row created.
+
+SQL> 
+SQL> -- Display table names
+SQL> SELECT table_name FROM user_tables;
+
+TABLE_NAME                                                                      
+------------------------------                                                  
+ADVISOR                                                                         
+STUDENT                                                                         
+COURSE                                                                          
+ENROLLMENT                                                                      
+
+SQL> 
+SQL> -- Display structure of tables
+SQL> DESC ADVISOR
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ADVISORID                                 NOT NULL NUMBER
+ ADVISORNAME                               NOT NULL VARCHAR2(50)
+
+SQL> DESC STUDENT
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ STUDENTID                                 NOT NULL NUMBER
+ STUDENTNAME                               NOT NULL VARCHAR2(50)
+ BIRTHDATE                                          DATE
+ ADVISORID                                          NUMBER
+ GENDER                                             CHAR(1)
+
+SQL> DESC ENROLLMENT
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ STUDENTID                                 NOT NULL NUMBER
+ COURSEID                                  NOT NULL NUMBER
+ GRADE                                              NUMBER
+
+SQL> DESC COURSE
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ COURSEID                                  NOT NULL NUMBER
+ COURSETITLE                                        VARCHAR2(50)
+ CREDITS                                            NUMBER
+
+SQL> 
+SQL> -- Display constraints
+SQL> SELECT constraint_name, table_name, constraint_type FROM user_constraints;
+
+CONSTRAINT_NAME                TABLE_NAME                     C                 
+------------------------------ ------------------------------ -                 
+ENROLLMENT_COURSEID_FK2        ENROLLMENT                     R                 
+ENROLLMENT_STUDENTID_FK1       ENROLLMENT                     R                 
+COURSE_CREDITS_CK              COURSE                         C                 
+STUDENT_ADVISORID_FK           STUDENT                        R                 
+STUDENT_GENDER_CK              STUDENT                        C                 
+STUDENT_STUDENTNAME_NN         STUDENT                        C                 
+ADVISOR_ADVISORNAME_NN         ADVISOR                        C                 
+ADVISOR_ADVISORID_PK           ADVISOR                        P                 
+STUDENT_STUDENTID_PK           STUDENT                        P                 
+COURSE_COURSEID_PK             COURSE                         P                 
+COURSE_COURSETITLE_UK          COURSE                         U                 
+
+CONSTRAINT_NAME                TABLE_NAME                     C                 
+------------------------------ ------------------------------ -                 
+ENROLLMENT_STUD_COURSE_PK      ENROLLMENT                     P                 
+
+12 rows selected.
+
+SQL> 
+SQL> -- Save spool
+SQL> SPOOL OFF;
